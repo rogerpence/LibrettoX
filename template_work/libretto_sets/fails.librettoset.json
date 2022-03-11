@@ -1,0 +1,8 @@
+{
+  "Template": "C:\\Users\\thumb\\Documents\\programming\\rpUtilities\\librettox\\template_work\\templates\\basic-crud.tpl.vr",
+  "SchemaLinkButtonLabel": "Open schema path",
+  "Schema": "C:\\Users\\thumb\\Documents\\programming\\rpUtilities\\librettox\\template_work\\schemas\\dg_examples\\*.json",
+  "OutputPath": "C:\\Users\\thumb\\Documents\\programming\\rpUtilities\\librettox\\template_work\\output\\datagate",
+  "Description": "fails",
+  "Messages": []
+}

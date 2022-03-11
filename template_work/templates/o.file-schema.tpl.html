@@ -1,0 +1,168 @@
+{#
+    #Prompt UserName         
+#}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{library}}/{{file}}</title>
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/be341549bf.js" crossorigin="anonymous"></script>    
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body class="bg-gray-100 p-10">
+
+<div class='toc'>
+    <ul>
+       {% for file in files %}
+       <li><a class="" href="{{file}}">{{file}}</a>
+       </li>        
+       {% endfor %}
+    </ul>
+</div>    
+   
+<div class="file-def">   
+    <h3 class="text-2xl">File definition: <span class="font-bold">{{username}}/{{library}}/{{file}}</span></h3>
+    <table class="w-9/12 mt-2 border border-solid border-gray-600">
+        {% set odd='bg-yellow-200' %}
+        {% set even='bg-green-200' %}
+        <tr class="bg-gray-800 text-white">
+            <th colspan="2" class="text-left p2">File info</th>
+        </tr>
+        <tr class="{{odd}}">
+            <td class="p-2 ">Database Name</td>
+            <td class="p-2">{{dbname}}</td>
+        </tr>
+        <tr class="{{even}}">
+            <td class="p-2">Library</td>
+            <td class="p-2">{{library}}</td>
+        </tr>
+        <tr class="{{odd}}">
+            <td class="p-2">File</td>
+            <td class="p-2">{{file}}</td>
+        </tr>
+        <tr class="{{even}}">
+            <td class="p-2">Format</td>
+            <td class="p-2">{{format}}</td>
+        </tr>
+        <tr class="{{odd}}">
+            <td class="p-2">Type</td>
+            <td class="p-2">{{type}}</td>
+        </tr>
+        <tr class="{{even}}">
+            <td class="p-2">Base file</td>
+            <td class="p-2">{{basefile}}</td>
+        </tr>
+        <tr class="{{odd}}">
+            <td class="p-2">Description</td>
+            <td class="p-2">{{description}}</td>
+        </tr>
+        <tr class="{{even}}">
+            <td class="p-2">Record length</td>
+            <td class="p-2">{{recordlength}}</td>
+        </tr>
+        <tr class="{{odd}}">
+            <td class="p-2">Key length</td>
+            <td class="p-2">{{keylength}}</td>
+        </tr>
+        <tr class="{{even}}">
+            <td class="p-2">Key fields</td>
+            {% if keyfields is defined and keyfields %}
+            <td class="p-2">{{keyfields|join(', ', attribute='name')}}</td>
+            {% else %}
+            <td class="p-2">No key fields</td>
+            {% endif %}
+        </tr>
+    </table>
+    <h3 class="text-2xl mt-8">Field schema</h3>
+    <table class="w-9/12 mt-2 border border-solid border-gray-600">
+        <tr class="bg-gray-800 text-white">
+            <th class="text-left p-2" colspan="2">Field name</th>
+            <th class="text-left p-2">Data type</th>
+            <th class="text-center p-2">Length</th>
+            <th class="text-center p-2">SQL type</th>
+            <th class="text-left p-2">Description</th>
+            <th class="text-left p-2">Validate</th>
+        </tr>
+
+    {% for field in fields %}
+        <tr class="{{ loop.cycle('bg-yellow-200', 'bg-green-200') }}">
+            {% set icon='' if field.keyposition  == -1 else '<i class="fas fa-key"></i>' %}
+            <td class="text-left p-2">{{icon}}</td>
+            <td class="text-left p-2">{{field.name}}</td>
+            <td class="text-left p-2">{{field.type}} {{field.lengthdecimals}}</td>
+            <td class="text-center p-2">{{field.lengthdecimals}}</td>
+            <td class="text-center p-2">{{field.SqlServerTypeWithLength}}</td>
+            <td class="text-left p-2">{{field.description}}</td>
+            <td class="text-left p-2">{{field.meta.validate}}</td>
+        </tr>
+    {% endfor %}
+    </table>
+
+    {% if hasmetadata == 'True' %}
+    <h3 class="text-2xl mt-8">Meta data</h3>
+    <table class="w-9/12 mt-2 border border-solid border-gray-600">
+        <tr class="bg-gray-800 text-white">
+            <th class="text-left p-2">Control</th>
+            <th class="text-center p-2">Default</th>
+            <th class="text-center p-2">Required</th>
+            <th class="text-left p-2">Validate</th>
+            <th class="text-left p-2">Description</th>
+        </tr>
+
+    {% for field in fields %}
+        <tr class="{{ loop.cycle('bg-yellow-200', 'bg-green-200') }}">
+            <td class="text-left p-2">{{field.control}}</td>
+            <td class="text-center p-2">{{field.default}}</td>
+            <td class="text-center p-2">{{field.required}}</td>
+            <td class="text-left p-2">{{field.validate}}</td>
+            <td class="text-left p-2">{{field.description}}</td>
+        </tr>
+    {% endfor %}
+    </table>
+
+    {% endif %}
+
+
+
+    <h4 class="mt-3">Input file</h4>
+    <div class="bg-gray-500">
+    <pre>
+        DclDiskFile {{file}}_R +
+            Type(*Input) + 
+            Org(*Indexed) + 
+            Prefix({{file}}_) + 
+            File("{{library}}/{{file}}") +
+            DB(DGDB) +
+            RnmFmt({{format}}) +
+            ImpOpen(*No)  
+    </pre>            
+    </div>
+
+    <h4 class="mt-3">Update file</h4>
+    <div class="bg-gray-500">
+    <pre>
+        DclDiskFile {{file}}_W +
+            Type(*Update) + 
+            Org(*Indexed) + 
+            Prefix({{file}}_) + 
+            File("{{library}}/{{file}}") +
+            DB(DGDB) +
+            RnmFmt({{format}}) +
+            ImpOpen(*No) +
+            AddRec(*Yes) 
+    </pre>            
+    </div>
+</div>    
+
+<script src="__toc.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="toc.js"></script>
+
+</body>
+</html>
+

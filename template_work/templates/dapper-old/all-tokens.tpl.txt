@@ -1,0 +1,60 @@
+/*
+--------------------
+SQL templates tokens
+--------------------
+Last updated: {{_datetime}}
+
+Built-in tokens: (available to all templates)
+
+    _datetime.........................: {{_datetime}}
+    _template.........................: {{_template}}
+    _schema...........................: {{_schema}}
+
+    The underscore prefix is reserved for built-tokens.
+
+Table-level tokens with single values:
+
+    primaryKeyCSDeclaration..........: {{primaryKeyCSDeclaration}}
+    primaryKeyCSAssignment...........: {{primaryKeyCSAssignment}}
+    primaryKeySqlDeclaration.........: {{primaryKeySqlDeclaration}}
+    primaryKeySqlAssignment..........: {{primaryKeySqlAssignment}}
+    modelKeyName.....................: {{modelKeyName}}
+    csKeyName........................: {{cssKeyName}}
+    csKeyType........................: {{csKeyType}}
+
+Table-level tokens with list values: (some lists may contain one element)
+
+    columnSqlDeclarations:
+{{columnSqlDeclarations | indent(8, True)}}
+
+    columnSqlDeclarationsNoIdentity:
+{{columnSqlDeclarationsNoIdentity | indent(8, True)}}
+
+    columnNamesSqlList:
+{{columnNamesSqlList | indent(8, True)}}
+
+    columnValuesSqlList:
+{{columnValuesSqlList | indent(8, True)}}
+
+    columnValuesAssignmentSqlList:
+{{columnValuesAssignmentSqlList | indent(8, True)}}
+
+    modelColumnNames:
+{{modelColumnNames | indent(8, True)}}
+
+Column level tokens: 
+        
+{% for column in columns %}
+ColumnName.......: {{column.ColumnName}}
+    Type.........: {{column.Type}}
+    DDLType......: {{column.DDLType}} 
+    CSType.......: {{column.CSType}}
+    NETType......: {{column.NETType}}
+    MaxLength....: {{column.MaxLength}}
+    Precision....: {{column.Precision}}
+    Scale........: {{column.Scale}}
+    Nullable.....: {{column.Nullable}}
+    PrimaryKey...: {{column.PrimaryKey}}
+    Identity.....: {{column.Identity}}
+
+{% endfor %}

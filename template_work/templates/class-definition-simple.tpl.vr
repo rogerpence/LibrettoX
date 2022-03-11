@@ -1,0 +1,142 @@
+// CRUD operations for a file
+
+// Generated on........: {{_datetime}}
+// Template............: {{_template}}
+// Schema..............: {{_schema}}
+
+BegClass CRUD{{alias}} Access(*Public)
+
+    DclDB DGDB DBName("{{dbname}}") 
+            
+    DclDiskFile {{alias}}R +
+        Type(*Input) + 
+        Org(*Indexed) + 
+        File("{{library}}/{{file}}") +
+        DB(DGDB) +
+        RnmFmt(F{{alias}}R) +        
+        ImpOpen(*No)  
+        
+    DclDiskFile {{alias}}W +
+        Type(*Update) + 
+        Org(*Indexed) + 
+        File("{{library}}/{{file}}") +
+        DB(DGDB) +
+        AddRec(*Yes) +
+        RnmFmt(F{{alias}}W) +
+        ImpOpen(*No)  
+
+    DclProp Buffer Type({{alias}}_buffer) Access(*Public)
+
+    BegConstructor Access(*Public)
+         DclSrParm DGDB Type(ASNA.VisualRPG.Runtime.Database) 
+
+         *This.DGDB = DGDB
+         Connect DGDB 
+
+         Open {{alias}}R
+         Open {{alias}}W
+         Buffer = *New {{alias}}_buffer()
+    EndConstructor 
+
+    BegSr Close Access(*Public)
+        Close *All
+    EndSr
+
+    BegFunc Read Type(General.ExitCode) Access(*Public) 
+        DclSrParm Buffer Type({{alias}}_keys_buffer)
+
+        {% for field in keyfields %}
+        {{field.name}} = Buffer.{{field.name}}
+        {% endfor %}
+
+        Chain {{alias}}R Key({{keyfieldslist}})
+        If {{alias}}R.IsFound
+            FieldsFromRecordFormat(Buffer)
+            LeaveSr General.ExitCode.Success        
+        Else
+            LeaveSr General.ExitCode.RecordNotFound
+        EndIf 
+    EndFunc
+
+    BegFunc Update Type(General.ExitCode) Access(*Public) 
+        DclSrParm Buffer Type({{alias}}_buffer)
+
+        {% for field in keyfields %}
+        {{field.name}} = Buffer.{{field.name}}
+        {% endfor %}
+
+        Chain {{alias}}W Key({{keyfieldslist}})
+        If {{alias}}W.IsFound
+            FieldsToRecordFormat(Buffer)
+            Update {{alias}}W
+            LeaveSr General.ExitCode.Success        
+        Else
+            LeaveSr General.ExitCode.UpdateFailed
+        EndIf 
+    EndFunc 
+
+    BegFunc Delete Type(General.ExitCode) Access(*Public) 
+        DclSrParm Buffer Type({{alias}}_keys_buffer)
+
+        {% for field in keyfields %}
+        {{field.name}} = Buffer.{{field.name}}
+        {% endfor %}
+
+        Chain {{alias}}W Key({{keyfieldslist}})
+        If {{alias}}W.IsFound
+            Delete {{alias}}W
+            LeaveSr General.ExitCode.Success        
+        Else
+            LeaveSr General.ExitCode.DeleteFailed
+        EndIf 
+    EndFunc 
+
+    BegFunc Add Type(General.ExitCode) Access(*Public) 
+        DclSrParm Buffer Type({{alias}}_buffer)
+
+        {% for field in keyfields %}
+        {{field.name}} = Buffer.{{field.name}}
+        {% endfor %}
+
+        Chain {{alias}}W Key({{keyfieldslist}})
+        If NOT {{alias}}W.IsEOF
+            LeaveSr General.ExitCode.DeleteFailedRecordExists
+        Else 
+            FieldsToRecordFormat(Buffer) 
+            Write {{alias}}W
+            LeaveSr General.ExitCode.Success        
+        EndIf 
+    EndFunc 
+
+    BegSr FieldsToRecordFormat
+        DclSrParm Buffer Type({{alias}}_buffer)
+
+    {% for field in fields %}
+        {{field.name}} = Buffer.{{field.name}}
+    {% endfor %}
+    EndSr
+
+    BegSr FieldsFromRecordFormat
+        DclSrParm Buffer Type({{alias}}_buffer)
+
+    {% for field in fields %}
+        Buffer.{{field.name}} = {{field.name}}
+    {% endfor %}
+    EndSr
+EndClass
+
+BegClass {{alias}}_buffer Access(*Public)
+    {% for field in keyfields %}
+    DclProp {{field.name}} {{field.fulltype}} Access(*Public) // SetAccess(*Private)
+    {% endfor %}
+
+    {% for field in nonkeyfields %}
+    DclProp {{field.name}} {{field.fulltype}} Access(*Public)
+    {% endfor %}
+EndClass
+
+BegClass {{alias}}_keys_buffer Access(*Public)
+    {% for field in keyfields %}
+    DclProp {{field.name}} {{field.fulltype}} Access(*Public) // SetAccess(*Private)
+    {% endfor %}
+EndClass

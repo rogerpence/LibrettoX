@@ -1,0 +1,85 @@
+﻿{
+  "fields": [
+    {
+      "name": "cmcustno",
+      "alias": "Customer number",
+      "control": "text",
+      "default": "",
+      "required": true,
+      "validate": "",
+      "description": "Customer number"
+    },
+    {
+      "name": "cmname",
+      "alias": "Name",
+      "control": "text",
+      "default": "",
+      "required": true,
+      "validate": ""
+    },
+    {
+      "name": "cmaddr1",
+      "alias": "Address",
+      "control": "text",
+      "default": "",
+      "required": true,
+      "validate": ""
+    },
+    {
+      "name": "cmcity",
+      "alias": "City",
+      "control": "text",
+      "default": "",
+      "required": true,
+      "validate": ""
+    },
+    {
+      "name": "cmstate",
+      "alias": "State",
+      "control": "dropdown",
+      "default": "1",
+      "required": true,
+      "validate": "^(1|2)$"
+    },
+    {
+      "name": "cmcntry",
+      "alias": "Country",
+      "control": "text",
+      "default": "",
+      "required": true,
+      "validate": ""
+    },
+    {
+      "name": "cmpostcode",
+      "alias": "Postal Code ",
+      "control": "text",
+      "default": "",
+      "required": true,
+      "validate": "^\\d([0-9]*(-)?( )?)*\\d$"
+    },
+    {
+      "name": "cmactive",
+      "alias": "Active",
+      "control": "dropdown",
+      "default": "1",
+      "required": true,
+      "validate": "1,2"
+    },
+    {
+      "name": "cmfax",
+      "alias": "Fax",
+      "control": "text",
+      "default": "",
+      "required": false,
+      "validate": "^\\d*$"
+    },
+    {
+      "name": "cmphone",
+      "alias": "Phone",
+      "control": "text",
+      "default": "",
+      "required": false,
+      "validate": "^\\d([0-9]*(-)?( )?)*\\d$"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+BegClass CommandLineArgs Access(*Public)
+
+{% for argument in arguments %}
+    DclFld _{{argument.name}} Type({{argument.type}})
+    BegProp {{argument.name}} Type({{argument.type}}) Access(*Public) Attributes(CmdArg("--{{argument.argname}}", "-{{argument.argshorthand}}", {{argument.required}}, "{{argument.description}}"))
+        BegGet
+            LeaveSr Value(_{{argument.name}})
+        EndGet
+        BegSet
+            _{{argument.name}} = *Propval
+        EndSet
+    EndProp
+
+{% endfor %}
+    BegConstructor Access(*Public)
+    {% for argument in arguments %}
+    {% if not argument.default.lower() == 'none'%}
+        *This.{{argument.name}} = {{argument.default}}
+    {% endif %}
+    {% endfor %}
+    EndConstructor 
+EndClass

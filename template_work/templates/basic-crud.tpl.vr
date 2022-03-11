@@ -1,0 +1,133 @@
+// CRUD operations for a file
+// Generated with template:
+// Template............: {{template}}
+// Schema..............: {{schema}}
+// Generated on........: {{datetime}}
+// File description....: {{description}}
+// File is keyed on....: {{keyfieldslist}}
+// Record format name..: {{format}}
+// python librettox.py -t class-definition-simple.tpl.vr -s examples_cmastnewl2.json -o examples
+
+Using System
+
+DclNamespace {{namespace}}
+
+BegClass CRUD{{alias}} Access(*Public) Implements(IDisposable) 
+
+    DclDB DGDB DBName("{{dbname}}") 
+            
+    DclDiskFile {{alias}}R +
+        Type(*Input) + 
+        Org(*Indexed) + 
+        File("{{library}}/{{file}}") +
+        DB(DGDB) +
+        RnmFmt(F{{alias}}R) +        
+        ImpOpen(*No)  
+        
+    DclDiskFile {{alias}}W +
+        Type(*Update) + 
+        Org(*Indexed) + 
+        File("{{library}}/{{file}}") +
+        DB(DGDB) +
+        AddRec(*Yes) +
+        RnmFmt(F{{alias}}W) +
+        ImpOpen(*No)  
+
+    BegConstructor Access(*Public)
+         DclSrParm DGDB Type(ASNA.VisualRPG.Runtime.Database) 
+
+         *This.DGDB = DGDB
+         Connect DGDB 
+
+         Open {{alias}}R
+         Open {{alias}}W
+    EndConstructor 
+
+    BegSr Close Access(*Public) Implements(IDisposable.Dispose)
+        Close *All
+    EndSr
+
+    BegFunc Read Type(General.ExitCode) Access(*Public) 
+        DclSrParm Buffer Type({{alias}}_buffer)
+
+        {% for field in keyfields %}
+        {{field.name}} = Buffer.{{field.name}}
+        {% endfor %}
+        Chain {{alias}}R Key({{keyfieldslist}})
+        If {{alias}}R.IsFound
+            SetFieldsFromRecordFormat(Buffer)
+            LeaveSr General.ExitCode.Success        
+        Else
+            LeaveSr General.ExitCode.RecordNotFound
+        EndIf 
+    EndFunc
+
+    BegFunc Update Type(General.ExitCode) Access(*Public) 
+        DclSrParm Buffer Type({{alias}}_buffer)
+
+        {% for field in keyfields %}
+        {{field.name}} = Buffer.{{field.name}}
+        {% endfor %}
+        Chain {{alias}}W Key({{keyfieldslist}})
+        If {{alias}}W.IsFound
+            SetFieldsToRecordFormat(Buffer)
+            Update {{alias}}W
+            LeaveSr General.ExitCode.Success        
+        Else
+            LeaveSr General.ExitCode.UpdateFailed
+        EndIf 
+    EndFunc 
+
+    BegFunc Delete Type(General.ExitCode) Access(*Public) 
+        DclSrParm Buffer Type({{alias}}_buffer)
+
+        {% for field in keyfields %}
+        {{field.name}} = Buffer.{{field.name}}
+        {% endfor %}
+        Chain {{alias}}W Key({{keyfieldslist}})
+        If NOT {{alias}}W.IsFound
+            LeaveSr General.ExitCode.DeleteFailed_RecordNotFound       
+        Else
+            Delete {{alias}}W
+            LeaveSr General.ExitCode.Success
+        EndIf 
+    EndFunc 
+
+    BegFunc Add Type(General.ExitCode) Access(*Public) 
+        DclSrParm Buffer Type({{alias}}_buffer)
+
+        {% for field in keyfields %}
+        {{field.name}} = Buffer.{{field.name}}
+        {% endfor %}
+        Chain {{alias}}W Key({{keyfieldslist}})
+        If {{alias}}W.IsFound
+            LeaveSr General.ExitCode.AddFailed_RecordExists
+        Else 
+            SetFieldsToRecordFormat(Buffer) 
+            Write {{alias}}W
+            LeaveSr General.ExitCode.Success        
+        EndIf 
+    EndFunc 
+
+    BegSr SetFieldsToRecordFormat
+        DclSrParm Buffer Type({{alias}}_buffer)
+
+    {% for field in fields %}
+        {{field.name}} = Buffer.{{field.name}}
+    {% endfor %}
+    EndSr
+
+    BegSr SetFieldsFromRecordFormat
+        DclSrParm Buffer Type({{alias}}_buffer)
+
+    {% for field in fields %}
+        Buffer.{{field.name}} = {{field.name}}
+    {% endfor %}
+    EndSr
+EndClass
+
+BegClass {{alias}}_buffer Access(*Public)
+    {% for field in fields %}
+    DclProp {{field.name}} {{field.fulltype}} Access(*Public) 
+    {% endfor %}
+EndClass

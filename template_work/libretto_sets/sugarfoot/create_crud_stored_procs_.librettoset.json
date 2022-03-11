@@ -1,0 +1,7 @@
+{
+  "Messages": [],
+  "Description": "Create CRUD stored procs ",
+  "Schema": "C:\\Users\\thumb\\Documents\\programming\\rpUtilities\\librettox\\template_work\\schemas\\sql-server\\sugarfoot_db\\*.json",
+  "Template": "C:\\Users\\thumb\\Documents\\programming\\rpUtilities\\librettox\\template_work\\templates\\dapper\\dapper-crud-stored-procs.tpl.sql",
+  "OutputPath": "C:\\Users\\thumb\\Documents\\programming\\rpUtilities\\librettox\\template_work\\output\\sugarfoot"
+}

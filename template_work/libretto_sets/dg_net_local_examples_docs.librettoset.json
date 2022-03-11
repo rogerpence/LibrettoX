@@ -1,0 +1,7 @@
+{
+  "Messages": [],
+  "Description": "DG Net Local examples docs",
+  "Schema": "C:\\Users\\thumb\\Documents\\programming\\rpUtilities\\librettox\\template_work\\schemas\\dg_examples\\*.json",
+  "Template": "C:\\Users\\thumb\\Documents\\programming\\rpUtilities\\librettox\\template_work\\templates\\file-schema.tpl.html",
+  "OutputPath": "C:\\Users\\thumb\\Documents\\programming\\rpUtilities\\librettox\\template_work\\output\\examples"
+}

@@ -1,0 +1,214 @@
+Using System
+Using System.Collections
+Using System.Collections.Generic
+Using System.Text
+Using System.Text.RegularExpressions
+Using System.Data.SQLClient 
+Using System.Configuration 
+Using System.Reflection
+Using System.Diagnostics
+
+DclNameSpace Kabinart
+
+BegClass DGExport_{{file.upper()}} Implements(Kabinart.IDGExport) Access(*Public)
+    DclDB pgmDB DBName( "*Public/Kabinart_GXD" )
+
+    DclFld Conn Type(SqlConnection) 
+             
+    DclDiskFile  InputFile  +
+          Type(*Input) + 
+          Org(*Arrival) + 
+          File("{{file}}") +
+          DB(pgmDB) +
+          NetBlockFactor(100) +
+          ImpOpen(*No)  
+
+      //  -t insert_into.tpl.vr -s dg_net_local\kabinart_imbal.json -o test-sql
+
+    DclFld ExceptionCounter Type(*Integer4) 
+
+    DclFld logger Type(rputes.SimpleLogger) New()
+
+    BegConstructor Access(*Public) 
+        DclFld ConnectionString Type(*String) 
+        
+        ConnectionString = String.Format(ConfigurationManager.ConnectionStrings["sqlserverconnection"].ConnectionString, "Kabinart_Kloud") 
+        Conn = *New SQLConnection(ConnectionString) 
+        Conn.Open() 
+    EndConstructor 
+
+    BegFunc GetValuesClause Type(*String)
+        DclFld sb Type(StringBuilder) New()
+
+        DclConst RIGHT_QUOTE Value(U'2019') 
+        
+        // Ensure embedded single quotes are doubled for SQL Server. (if any)
+    {% for field in fields %}
+    {% if field.type == '*char' %}        {{field.name}} = {{field.name}}.Replace("'", RIGHT_QUOTE)
+    {% endif %}
+    {% endfor %}
+
+        // Create fields part of the SQL Value clause.
+        sb.Append("(")
+    {% for field in fields %}
+    {% if field.type == '*char' %}        sb.Append("'" + {{field.name}} + "'"{{' + ","' if not loop.last}}{{' + ")"' if loop.last}}) 
+    {% else %}        sb.Append({{field.name}}.ToString(){{' + "," ' if not loop.last}}{{' + ")" ' if loop.last}}) 
+    {% endif %}
+    {% endfor %}
+        LeaveSr sb.ToString()
+    EndFunc    
+
+
+    BegSr Run Access(*Public) Implements(Kabinart.IDGExport.Run)
+        DclSrParm CmdLineArgs Type(CommandLineArgs)
+
+        DclFld valuesClause Type(List(*of *String)) New()
+        DclFld RRN Type(*Integer4) 
+        DclFld clauseCounter Type(*Integer4) 
+        DclFld Minutes Type(*Integer4) 
+        DclFld SQLRows Type(*Integer4)
+        DclFld TimeToExport Type(*String)
+
+        DclFld sw Type(StopWatch) New() 
+        DclFld SqlCmd Type(SqlCommand) 
+
+        sw.Start()
+
+        SqlCmd = *New SqlCommand("TRUNCATE TABLE {{file}}", Conn)
+        SqlCmd.ExecuteNonQuery()
+        SqlCmd.Dispose()
+      
+        Connect pgmDB 
+        Open InputFile 
+
+        ValuesClause.Clear()
+
+        RRN = 0 
+        ClauseCounter = 0 
+        Read InputFile 
+        DoWhile NOT InputFile.IsEOF()
+            valuesClause.Add(GetValuesClause())
+            ClauseCounter = ClauseCounter + 1
+            If ClauseCounter = CmdLineArgs.MaxSQLValuesClauses
+                WriteSQLRow(valuesClause, RRN)
+                ValuesClause.Clear()
+                ClauseCounter = 0 
+            EndIf 
+
+            RRN = RRN + 1
+            If CmdLineArgs.ShowProgress
+                ShowProgress(RRN) 
+            EndIf 
+
+            If Mod(RRN, 100000)
+                logger.Trace(String.Format("Progress: {0} exported {1:#,###} of {2:#,###,###} rows. {3:##}% remaining.", +
+                    CmdLineArgs.Filename, RRN, InputFile.RecCount, ((InputFile.RecCount - RRN) / InputFile.RecCount) * 100))
+            EndIf 
+
+            Read InputFile 
+        EndDo 
+
+        If valuesClause.Count > 0 
+            WriteSQLRow(ValuesClause, RRN)
+        Endif 
+
+        sw.Stop()
+        
+        If ExceptionCounter > 0 
+            logger.Info(String.Format("Exception counter: {0}", ExceptionCounter))
+        EndIf 
+
+        SQLRows = GetSQLRows()
+
+        Minutes = sw.ElapsedMilliseconds / 60000
+        If Minutes <= 0 
+            TimeToExport = "in less than a minute"
+        Else
+            TimeToExport = String.Format("in {0:#,###.0} minutes", Minutes)
+        EndIf            
+
+        If GetSQLRows() = RRN 
+            logger.Info(String.Format("{0}: exported {1:#,###} rows from DataGate {2}. SQL Server table rows match DG rows.", CmdLineArgs.Filename, RRN, TimeToExport)) 
+        Else 
+            logger.Error(String.Format("{0}: exported {1:#,###} rows from DataGate {2}. DOES NOT MATCH match SQL Server table rows {3}.", CmdLineArgs.Filename, RRN, TimeToExport, GetSQLRows())) 
+        EndIf 
+
+        Close InputFile 
+        Disconnect pgmDB 
+
+        Conn.Close()
+        Conn.Dispose()
+    EndSr
+
+    BegSr WriteSQLRow
+        DclSrParm ValuesClause Type(List (*of *String))
+        DclSrParm RRN Type(*Integer4) 
+
+        DclFld sb Type(StringBuilder) New()
+        DclFld SqlCmd Type(SqlCommand)
+        DclFld Transaction Type(SqlTransaction)         
+        DclFld Result Type(*Integer4) 
+        DclFld ValuesClauseString Type(*String) 
+
+        ValuesClauseString = "VALUES " + String.Join(",", ValuesClause.ToArray())
+        ValuesClauseString = Regex.Replace(ValuesClauseString, "\s*,\s*$", String.Empty)
+
+        sb.append("INSERT INTO {{file}} ({{allfieldslist}}) ") 
+        sb.append(ValuesClauseString)
+
+        Try 
+            transaction = Conn.BeginTransaction()
+            SqlCmd = *New SqlCommand(sb.ToString(), Conn, Transaction)
+            Result = SqlCmd.ExecuteNonQuery()
+            transaction.Commit()
+
+            SqlCmd.Dispose()
+        Catch ex Type(Exception) 
+            logger.Error(String.Format("Error occurred on record: {0:#,###}", RRN))
+            logger.Error(ex.Message)
+            logger.Error(String.Format("Values clause: {0}", ValuesClause))
+            ExceptionCounter = ExceptionCounter + 1
+        EndTry 
+    EndSr
+
+    BegFunc GetSQLRows Type(*Integer4) 
+        DclFld SqlCmd Type(SqlCommand)
+        DclFld SQLRows Type(*Integer4) 
+    
+        SqlCmd = *New SqlCommand("Select count(*) from {{file}}", Conn)
+        SqlRows = SqlCmd.ExecuteScalar() *As *Integer4
+        LeaveSr Sqlrows 
+    EndFunc    
+
+    BegSr ShowProgress
+        DclSrParm CurrentRecord Type(*Integer4) 
+
+        DclFld CursorLeft Type(*Integer4) 
+        DclFld CursorTop Type(*Integer4) 
+
+        CursorLeft = Console.CursorLeft
+        CursorTop = Console.CursorTop 
+
+        If Mod(CurrentRecord,1000) OR CurrentRecord < 1000 
+            Console.WriteLine("Row: {0:#,###}", CurrentRecord)
+        EndIf 
+
+        Console.CursorLeft = CursorLeft
+        Console.CursorTop = CursorTop 
+    EndSr
+
+    BegFunc Mod Type(*Boolean) Shared(*Yes) Access(*Public) 
+        // Return the remainder of division.
+        DclSrParm Dividend *Integer4 
+        DclSrParm Divisor  *Integer4 
+
+        DclFld Remainder *Integer4 
+
+        System.Math.DivRem(Dividend, Divisor, *ByRef Remainder) 
+
+        Leavesr Remainder = 0 
+    EndFunc
+
+EndClass
+
+

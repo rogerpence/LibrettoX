@@ -2,6 +2,10 @@
 
 Many years ago I made a little template-based code generator with ASNA Visual RPG called Libretto. That old version was based on .NET FW WinForms and used my own, _very crude_ template engine. 
 
+![](https://rogerpence.dev/wp-content/uploads/2022/03/AVRWIN_GeneratorCharlie_YgEHRLPaOX.png)
+
+<small>Figure 1. The old Libretto fat client, circa 2006.</small>
+
 This project is a new, from the ground-up, code generator. It reads a Json schema and a [Jinja2 template](https://jinja.palletsprojects.com/en/3.0.x/) to produce a source file. 
 
 This version of the Libretto solves several limitations of the old Libretto:
@@ -19,10 +23,6 @@ This version of Libretto was primarily intended to be a command-line only versio
 ### What does LibrettoX do
 
 Given a Json schema and a template, it produces an output file for use with your favorite compiler or intepreter. 
-
-```
-file-schema_examples.states.txt
-```
 
 ![](https://rogerpence.dev/wp-content/uploads/2022/03/l0CkJzFwxz.png)
 
@@ -206,36 +206,6 @@ or use the LibrettoXUI point-and-click UI:
 ![](https://rogerpence.dev/wp-content/uploads/2022/03/LibrettoUI-2_JDLQCnt93S.png)
 
 The LibrettoUIX point-and-click interface is a relatively new addition to Libretto. [Read more about it here.](https://github.com/rogerpence/librettoUIX) This UI is a Windows WPF application that is essentially a front-end that builds the command lines that `librettox.py` needs. This UI doesn't directly perform template translation, under the covers it launches a process that runs `libretto.py` to do that. () 
-
-### Prompted template values
-
-A template can contain prompted values. These values become top-level elements in the `template_data` object and can be used in a Jinja2 template like values provided by the schema file. Prompted template values gives you a chance to fetch general-purpose meta data that isn't present in the schema data. 
-
-The syntax for specifying a value prompt is:
-
-    #prompt valuename 
-
-`#prompt` can have any number of leading blanks or tabs preceding it and it is not case-sensitive. 
-
-To keep the template from considering the value prompts as part of the template, all prompted values should be nested inside a Jinja2 templates comments like this: 
-
-    {#
-        #prompt namespace
-        #prompt username
-    #}
-
-
-The prompted values above could be used in a template like this: 
-
-    DclNameSpace {{namespace}}
-
-    // Created by: {{username}}s schema/examples_cmastnewl2.yaml
-
-> Value names are always converted to lowercase. Be sure to specify them as lowercase in your Jinja2 templates.
-
-Where the `namespace` value provides the namespace for a chunk of code and the `username` value provides the user name to put in a code comment.     
-
-If you're processing many schema files with this template processor, the values are prompted once for all schema files. That is, you can't change the value of a prompted value for each schema file when processing them in a group. 
 
 ### Command line arguments
 

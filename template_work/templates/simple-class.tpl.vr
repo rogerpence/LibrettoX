@@ -1,0 +1,13 @@
+Using System 
+
+DclNamespace MyNamespace 
+
+BegClass {{file}}_buffer Access(*Public)
+    {% for field in keyfields %}
+    DclProp {{field.name}} {{field.fulltype}} Access(*Public) 
+    {% endfor %}
+
+    {% for field in nonkeyfields %}
+    DclProp {{field.name}} {{field.fulltype}} Access(*Public) 
+    {% endfor %}
+EndClass
