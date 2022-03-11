@@ -231,4 +231,41 @@ When multiple files are specified, the template processor prompts for prompted v
 
 #### --outdir, -o 
 
-The output directory. 
+### LibrettoX paths
+
+All LibrettoX paths assumes that in the folder where `librettox.py` resides there is a `template_work` folder. Command lines are relative to this folder: 
+
+* schema path is relative to `template-work\schemas` path
+* template path ise relative to `template_work\templates` path
+* output paths is relative to the `template_work\output` path
+
+The directory listing below shows one the `librettox.py` file but there are also a few other files there (args_process.py, utils.py. a __pycache__ folder and probably a few others)
+
+```
++---librettox
+    librettox.py
+    +---template_work
+    |   +---libretto_batch_files
+    |   +---libretto_sets
+    |   |   \---sugarfoot
+    |   +---output
+    |   |   +---classes
+    |   |   +---dapper
+    |   |   +---dg_examples
+    |   |   +---examples
+    |   |   \---sugarfoot
+    |   +---schemas
+    |   |   +---argybargy
+    |   |   +---dg_examples
+    |   |   \---sql-server
+    |   |       \---sugarfoot_db
+    |   \---templates
+    |       +---datagate
+    |       \---dapper
+```
+
+### Libretto sets and batch files
+
+The [LibrettoXUI](https://github.com/rogerpence/librettoUIX) WPF LibrettoX command line front-end can save a given Libretto session as a Libretto Set. A Libretto Set can later be opened to re-estalish that Libretto session. Libretto Set files are in the `libretto_sets` folder.
+
+When a Libretto Set is saved, a corresponding batch file is also saved in the `libretto_batch_files` folder. This lets you re-run the Libretto Set from the command line. 

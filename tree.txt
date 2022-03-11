@@ -1,0 +1,37 @@
+Folder PATH listing for volume DelRay
+Volume serial number is 7716AD40 B418:74C5
+C:.
++---template_work
+|   +---libretto_batch_files
+|   +---libretto_sets
+|   |   \---sugarfoot
+|   +---output
+|   |   +---classes
+|   |   +---dapper
+|   |   +---dapper-old
+|   |   +---datagate
+|   |   +---dg_examples
+|   |   +---docs
+|   |   +---examples
+|   |   +---ka
+|   |   +---kabatch
+|   |   +---New Folder
+|   |   +---sugarfoot
+|   |   +---test
+|   |   \---test-sql
+|   +---schemas
+|   |   +---argybargy
+|   |   +---dg_examples
+|   |   +---Kabinart
+|   |   |   +---DataGateSchemas
+|   |   |   +---ka
+|   |   |   |   \---physicals
+|   |   |   +---kabinart2
+|   |   |   \---Kabinartx
+|   |   |       \---KabinArt-01
+|   |   \---sql-server
+|   |       \---sugarfoot_db
+|   \---templates
+|       +---dapper
+|       \---dapper-old
+\---__pycache__
