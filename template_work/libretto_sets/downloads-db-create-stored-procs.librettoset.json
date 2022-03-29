@@ -1,0 +1,8 @@
+{
+  "Template": "C:\\Users\\thumb\\Documents\\programming\\rpUtilities\\librettox\\template_work\\templates\\dapper\\dapper-crud-stored-procs.tpl.sql",
+  "SchemaLinkButtonLabel": "Open schema path",
+  "Schema": "C:\\Users\\thumb\\Documents\\programming\\rpUtilities\\librettox\\template_work\\schemas\\sql-server\\downloads_db\\*.json",
+  "OutputPath": "C:\\Users\\thumb\\Documents\\programming\\rpUtilities\\librettox\\template_work\\output\\downloads-db",
+  "Description": "downloads-db-create-stored-procs",
+  "Messages": []
+}

@@ -1,0 +1,59 @@
+{#
+    ##Prompt username      
+#}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{library}}/{{file}}</title>
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+	<script src="https://kit.fontawesome.com/a925bf1381.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<!-- generated on: {{datetime}} -->
+<!-- with template: {{template}} -->
+<!-- with schema: {{schema}} -->
+
+<body class="bg-gray-100 p-10">
+   
+<div class="file-def">   
+    <h3 class="text-2xl">Table: <span class="font-bold">{{DatabaseName}}.{{TableName}}</span></h3>
+    <table class="w-9/12 mt-2 border border-solid border-gray-600">
+        {% set odd='bg-yellow-200' %}
+        {% set even='bg-green-200' %}
+    <h3 class="text-2xl mt-8">Field schema</h3>
+	
+    <div><span>Key = <i class="fal fa-key"></i></span> <span>Identity = <i class="fal fa-id-badge"></i></span> <span>Nullable = <i class="fal fa-empty-set"></i></span></div>
+	
+    <table class="w-9/12 mt-2 border border-solid border-gray-600">
+        <tr class="bg-gray-800 text-white">
+            <th class="text-left p-2">Usage</th>
+            <th class="text-left p-2">Name</th>
+            <th class="text-left p-2">Data Type</th>
+        </tr>
+
+    {% for column in columns %}
+        <tr class="{{ loop.cycle('bg-yellow-200', 'bg-green-200') }}">
+            {% set icon=''     if column.PrimaryKey=='False' else '<i class="fal fa-key"></i>' %}
+            {% set identity='' if column.PrimaryKey=='False' else '<i class="fal fa-id-badge"></i>' %}
+            {% set nullable='' if column.Nullable=='False'   else '<i class="fal fa-empty-set"></i>' %}
+			
+            <td class="text-left p-2">{{icon}} {{identity}} {{nullable}}</td>
+            <td class="text-left p-2">{{column.ColumnName}}</td>
+            <td class="text-left p-2">{{column.DDLType}}</td>
+        </tr>
+    {% endfor %}
+	
+    </table>
+</div>    
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="index.js"></script>
+
+</body>
+</html>
+

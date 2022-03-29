@@ -1,0 +1,11 @@
+{
+  "Template": "C:\\Users\\thumb\\Documents\\programming\\rpUtilities\\librettox\\template_work\\templates\\dapper\\dapper-crud-stored-procs.tpl.sql",
+  "SchemaLinkButtonLabel": "Open schema path",
+  "Schema": "C:\\Users\\thumb\\Documents\\programming\\rpUtilities\\librettox\\template_work\\schemas\\sql-server\\downloads_db\\*.json",
+  "OutputPath": "C:\\Users\\thumb\\Documents\\programming\\rpUtilities\\librettox\\template_work\\output\\downloads-db",
+  "Description": "create crud stored procs for downloads",
+  "Messages": [
+    "Libretto set saved as: C:\\Users\\thumb\\Documents\\programming\\rpUtilities\\librettox\\template_work\\libretto_sets\\create_crud_stored_procs_for_sugarfoot.librettoset.json",
+    "Libretto batch file saved as: c:\\users\\thumb\\documents\\programming\\rputilities\\librettox\\template_work\\libretto_batch_files\\create_crud_stored_procs_for_sugarfoot.librettoset.bat"
+  ]
+}

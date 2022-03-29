@@ -1,0 +1,13 @@
+{
+  "Template": "C:\\Users\\thumb\\Documents\\programming\\rpUtilities\\librettox\\template_work\\templates\\dapper\\dapper-crud-stored-procs.tpl.sql",
+  "SchemaLinkButtonLabel": "Open schema path",
+  "Schema": "C:\\Users\\thumb\\Documents\\programming\\rpUtilities\\librettox\\template_work\\schemas\\sql-server\\sugarfoot_db\\*.json",
+  "OutputPath": "C:\\Users\\thumb\\Documents\\programming\\rpUtilities\\librettox\\template_work\\output\\sugarfoot",
+  "Description": "Create CRUD stored procs for sugarfoot",
+  "Messages": [
+    "14:17:05 : Wrote file: template_work\\output\\sugarfoot\\dapper-crud-stored-procs.downloads.Family.sql",
+    "14:17:05 : Wrote file: template_work\\output\\sugarfoot\\dapper-crud-stored-procs.sugarfoot.Artist.sql",
+    "14:17:05 : Wrote file: template_work\\output\\sugarfoot\\dapper-crud-stored-procs.sugarfoot.Song.sql",
+    "14:17:05 : Wrote file: template_work\\output\\sugarfoot\\dapper-crud-stored-procs.sugarfoot.SongList.sql"
+  ]
+}

@@ -10,10 +10,14 @@ Schema........{{_schema}}
 
 namespace DataAccess.Models
 {
-    public class {{TableName}}Model
+    public class {{TableName}}
     {
         {% for column in columns %}
-        public {{column.CSType}} {{column.ColumnName}} {get;set;}
+        {% if column.ColumnName.lower() == 'added' or column.ColumnName.lower() == 'updated' %}
+        public {{column.CSType}}? {{column.ColumnName}} {get;set;} = null;
+        {% else %}
+        public {{column.CSType}} {{column.ColumnName}} {get;set;} 
+        {% endif %}
         {% endfor %}
     }
 }
